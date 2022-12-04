@@ -58,16 +58,6 @@ pub fn part_two(input: &String) -> u32 {
             acc & Compartment::from_str(sack).unwrap().priorities
         });
         sum += value.ilog2() + 1;
-        // let len = line.len();
-
-        // let left_compartment = Compartment::from_str(&line[..len / 2]).unwrap();
-        // let right_compartment = Compartment::from_str(&line[len / 2..]).unwrap();
-
-        // let matching = left_compartment.priorities & right_compartment.priorities;
-
-        // let priority = matching.ilog2() + 1;
-
-        // sum += priority;
     }
 
     return sum;
