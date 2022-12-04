@@ -15,12 +15,12 @@ pub fn part_one(input: &String) -> i32 {
         if yours == theirs {
             // Draw
             score += 3;
-        } if (theirs + 1) % 3 == yours {
+        }
+        if (theirs + 1) % 3 == yours {
             // choice + 1 beats it, so if yours is theirs + 1 (with modulo to wrap around) you win
             score += 6;
         }
         // Else, lost, no score added
-       
     }
 
     return score;

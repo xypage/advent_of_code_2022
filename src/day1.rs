@@ -39,5 +39,5 @@ pub fn part_two(input: &String) -> u32 {
     calories_list.push(current_calories);
 
     calories_list.sort_by(|a, b| b.cmp(a));
-    return  calories_list[..3].iter().fold(0, |a, b| a + b);
+    return calories_list[..3].iter().fold(0, |a, b| a + b);
 }
