@@ -7,9 +7,10 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 fn main() {
-    day4();
+    day5();
 }
 
 #[cfg(test)]
@@ -60,6 +61,37 @@ mod tests {
         let example: String = String::from("2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8");
         assert_eq!(4, day4::part_two(&example));
     }
+
+    #[test]
+    fn day5_part_one() {
+        let example: String = String::from(
+            "    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2",
+        );
+        assert_eq!("CMZ", day5::part_one(&example));
+    }
+    #[test]
+    fn day5_part_two() {
+        let example: String = String::from(
+            "    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2",
+        );
+        assert_eq!("MCD", day5::part_two(&example));
+    }
 }
 
 fn day1() {
@@ -88,4 +120,11 @@ fn day4() {
         fs::read_to_string("./input/day4").expect("Should have been able to read the file");
     println!("Part one: {}", day4::part_one(&contents));
     println!("Part two: {}", day4::part_two(&contents));
+}
+
+fn day5() {
+    let contents =
+        fs::read_to_string("./input/day5").expect("Should have been able to read the file");
+    println!("Part one: {}", day5::part_one(&contents));
+    println!("Part two: {}", day5::part_two(&contents));
 }
