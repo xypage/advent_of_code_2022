@@ -46,7 +46,7 @@ fn main() {
 
                     // We split on ___ which I'm using to separate my expected test results, that's arbitrary
                     // then we're setting the correct part's result to test_output
-                    let (part_1_test, part_2_test) = x.split_once("___").unwrap();
+                    let (part_1_test, part_2_test) = x.split_once("---").unwrap();
                     test_output = Some(String::from({
                         if part == 1 {
                             part_1_test
