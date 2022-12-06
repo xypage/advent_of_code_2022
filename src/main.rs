@@ -1,130 +1,93 @@
 #![allow(dead_code)]
 // #![allow(unused_variables)]
 
+use std::env;
 use std::fs;
 
-mod day1;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
+mod solutions;
 
 fn main() {
-    day5();
-}
+    let args: Vec<String> = env::args().collect();
+    // Make sure there's 2-4 commands
+    //  0: command to actually run it
+    //  1: the day to run
+    //  2: the part to run
+    //  3: optional, the test to run (requires the part)
+    assert!(args.len() > 1, "Need at least one argument to specify a day, one to specify part, and optionally one to say test.");
+    assert!(
+        args.len() < 5,
+        "You can pass 3 arguments, the day, a part, and optionally to test, you passed {}",
+        args.len()
+    );
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn day1_part_one() {
-        let example: String =
-            String::from("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000");
-        assert_eq!(24000, day1::part_one(&example));
+    // first arg specifies the day
+    let day: usize = args[1].parse::<usize>().unwrap();
+    // second arg specifies the part
+    let part: usize = args[2].parse::<usize>().unwrap();
+
+    let mut test_output: Option<String> = None;
+    let input: String = {
+        // less than 4 args means not testing
+        if args.len() < 4 {
+            let file = format!("./input/day{:02}", day);
+            fs::read_to_string(&file).unwrap_or_else(|_| panic!("Error reading file {}", file))
+        } else {
+            // the test input file has the expected output as the first line, with the actual input following
+            // so we split off the first line as the expected output
+            let file = format!("./input/day{:02}-test", day);
+            let test_input: String =
+                fs::read_to_string(&file).unwrap_or_else(|_| panic!("Error reading file {}", file));
+            // Split off that top line
+            let result: Option<(&str, &str)> = test_input.split_once("\n");
+            match result {
+                Some((x, y)) => {
+                    // Need to have String not &str because we drop test_input at the end of the closure here
+                    // so there'd be nothing for the &str to reference
+
+                    // We split on ___ which I'm using to separate my expected test results, that's arbitrary
+                    // then we're setting the correct part's result to test_output
+                    let (part_1_test, part_2_test) = x.split_once("___").unwrap();
+                    test_output = Some(String::from({
+                        if part == 1 {
+                            part_1_test
+                        } else {
+                            part_2_test
+                        }
+                    }));
+                    String::from(y)
+                }
+                None => {
+                    panic!("Failed to split off top line of test input");
+                }
+            }
+        }
+    };
+
+    // subtract 1 since day 1 is at index 0
+    let solution = solutions::get_day(day - 1);
+
+    match (test_output, part) {
+        (Some(expected_out), 1) => {
+            // Testing part 1
+            assert_eq!(expected_out, solution.part1(&input), "Part 1 failed test");
+            println!("Test passed for day {} part 1!", day)
+        }
+        (Some(expected_out), 2) => {
+            // Testing part 2
+            assert_eq!(expected_out, solution.part2(&input), "Part 2 failed test");
+            println!("Test passed for day {} part 2!", day)
+        }
+        (None, 1) => {
+            // Running part 1
+            println!("Day {} part 1 returned: {}", day, solution.part1(&input));
+        }
+        (None, 2) => {
+            // Running part 2
+            println!("Day {} part 2 returned: {}", day, solution.part2(&input));
+        }
+        _ => {
+            // Incorrect part number given
+            panic!("You indicated part number {} which is invalid", part);
+        }
     }
-    #[test]
-    fn day1_part_two() {
-        let example: String =
-            String::from("1000\n2000\n3000\n\n4000\n\n5000\n6000\n\n7000\n8000\n9000\n\n10000");
-        assert_eq!(45000, day1::part_two(&example));
-    }
-
-    #[test]
-    fn day2_part_one() {
-        let example: String = String::from("A Y\nB X\nC Z");
-        assert_eq!(15, day2::part_one(&example));
-    }
-    #[test]
-    fn day2_part_two() {
-        let example: String = String::from("A Y\nB X\nC Z");
-        assert_eq!(12, day2::part_two(&example));
-    }
-
-    #[test]
-    fn day3_part_one() {
-        let example: String = String::from("vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw");
-        assert_eq!(157, day3::part_one(&example));
-    }
-    #[test]
-    fn day3_part_two() {
-        let example: String = String::from("vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nPmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw");
-        assert_eq!(70, day3::part_two(&example));
-    }
-
-    #[test]
-    fn day4_part_one() {
-        let example: String = String::from("2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8");
-        assert_eq!(2, day4::part_one(&example));
-    }
-    #[test]
-    fn day4_part_two() {
-        let example: String = String::from("2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8");
-        assert_eq!(4, day4::part_two(&example));
-    }
-
-    #[test]
-    fn day5_part_one() {
-        let example: String = String::from(
-            "    [D]    
-[N] [C]    
-[Z] [M] [P]
- 1   2   3 
-
-move 1 from 2 to 1
-move 3 from 1 to 3
-move 2 from 2 to 1
-move 1 from 1 to 2",
-        );
-        assert_eq!("CMZ", day5::part_one(&example));
-    }
-    #[test]
-    fn day5_part_two() {
-        let example: String = String::from(
-            "    [D]    
-[N] [C]    
-[Z] [M] [P]
- 1   2   3 
-
-move 1 from 2 to 1
-move 3 from 1 to 3
-move 2 from 2 to 1
-move 1 from 1 to 2",
-        );
-        assert_eq!("MCD", day5::part_two(&example));
-    }
-}
-
-fn day1() {
-    let contents =
-        fs::read_to_string("./input/day1").expect("Should have been able to read the file");
-    println!("Part one: {}", day1::part_one(&contents));
-    println!("Part two: {}", day1::part_two(&contents));
-}
-
-fn day2() {
-    let contents =
-        fs::read_to_string("./input/day2").expect("Should have been able to read the file");
-    println!("Part one: {}", day2::part_one(&contents));
-    println!("Part two: {}", day2::part_two(&contents));
-}
-
-fn day3() {
-    let contents =
-        fs::read_to_string("./input/day3").expect("Should have been able to read the file");
-    println!("Part one: {}", day3::part_one(&contents));
-    println!("Part two: {}", day3::part_two(&contents));
-}
-
-fn day4() {
-    let contents =
-        fs::read_to_string("./input/day4").expect("Should have been able to read the file");
-    println!("Part one: {}", day4::part_one(&contents));
-    println!("Part two: {}", day4::part_two(&contents));
-}
-
-fn day5() {
-    let contents =
-        fs::read_to_string("./input/day5").expect("Should have been able to read the file");
-    println!("Part one: {}", day5::part_one(&contents));
-    println!("Part two: {}", day5::part_two(&contents));
 }
